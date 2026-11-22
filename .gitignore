@@ -221,3 +221,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Raw design-session transcript (local only, not published)
+/session-first-conversation-ses_ed8c.md

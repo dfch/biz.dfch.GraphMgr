@@ -1,0 +1,70 @@
+@startuml Node/Link Graph Architecture — Elicitation Q&A (2026-10-10/11)
+
+skinparam component {
+  backgroundColor<<ADR>> LightYellow
+  backgroundColor<<REQ>> LightBlue
+  backgroundColor<<UC>> Pink
+  backgroundColor<<TSK>> Honeydew
+  backgroundColor<<QA>> LemonChiffon
+  backgroundColor<<PRB>> LightCoral
+  backgroundColor<<GOL>> Lavender
+  backgroundColor<<RSK>> Orange
+  backgroundColor<<DEC>> LightGreen
+  backgroundColor<<SOP>> PowderBlue
+  backgroundColor<<FEAT>> PaleTurquoise
+  backgroundColor<<VCR>> Khaki
+  backgroundColor<<SYSRS>> Thistle
+  backgroundColor<<UNRESOLVED>> DarkRed
+}
+
+left to right direction
+
+package "QA" {
+component "Node/Link Graph Architecture —…" as [QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] <<QA>>
+
+}
+
+package "PRB" {
+component "Generic Typed Node/Link Graph with…" as [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] <<PRB>>
+
+}
+
+package "GOL" {
+    
+component "Detect and Absorb Changes Made Outside…" as [GOL-0503a9d2-0a80-4369-a295-ed978e3e4bef] <<GOL>>
+component "Keep Graph Data Precisely Trackable in…" as [GOL-1585066f-9fc7-44bb-a3be-3c5e6cf91cde] <<GOL>>
+component "Provide a Generic, Extensible Typed…" as [GOL-86b457d9-58b0-4c9c-8c53-cf7849a72e75] <<GOL>>
+component "Support Multi-Hop and Similarity…" as [GOL-a72b270f-2caf-4654-bf72-9dfa750f26ea] <<GOL>>
+}
+
+package "DEC" {
+
+component "Overall Approach: Bespoke System…" as [DEC-2c4a32c5-c9a7-4ad7-8740-53288b3ff15b] <<DEC>>
+component "Change Detection: Git-Independent…" as [DEC-3cccd4cb-f488-4a6f-8005-f38d2b5e92ef] <<DEC>>
+component "Derived State and Query Layer: Full…" as [DEC-4a3b078a-852c-4a4e-87b5-816e17dd0a44] <<DEC>>
+component "Storage Layout: One File per Entity,…" as [DEC-a6235507-22fa-4aed-a45e-d9707c0f13bd] <<DEC>>
+}
+
+[DEC-2c4a32c5-c9a7-4ad7-8740-53288b3ff15b] --> [GOL-1585066f-9fc7-44bb-a3be-3c5e6cf91cde] : ref
+[DEC-2c4a32c5-c9a7-4ad7-8740-53288b3ff15b] --> [GOL-86b457d9-58b0-4c9c-8c53-cf7849a72e75] : ref
+[DEC-2c4a32c5-c9a7-4ad7-8740-53288b3ff15b] --> [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] : ref
+[DEC-3cccd4cb-f488-4a6f-8005-f38d2b5e92ef] --> [GOL-0503a9d2-0a80-4369-a295-ed978e3e4bef] : ref
+[DEC-3cccd4cb-f488-4a6f-8005-f38d2b5e92ef] --> [GOL-1585066f-9fc7-44bb-a3be-3c5e6cf91cde] : ref
+[DEC-4a3b078a-852c-4a4e-87b5-816e17dd0a44] --> [GOL-0503a9d2-0a80-4369-a295-ed978e3e4bef] : ref
+[DEC-4a3b078a-852c-4a4e-87b5-816e17dd0a44] --> [GOL-a72b270f-2caf-4654-bf72-9dfa750f26ea] : ref
+[DEC-a6235507-22fa-4aed-a45e-d9707c0f13bd] --> [GOL-1585066f-9fc7-44bb-a3be-3c5e6cf91cde] : ref
+[DEC-a6235507-22fa-4aed-a45e-d9707c0f13bd] --> [GOL-86b457d9-58b0-4c9c-8c53-cf7849a72e75] : ref
+[GOL-0503a9d2-0a80-4369-a295-ed978e3e4bef] --> [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] : ref
+[GOL-1585066f-9fc7-44bb-a3be-3c5e6cf91cde] --> [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] : ref
+[GOL-86b457d9-58b0-4c9c-8c53-cf7849a72e75] --> [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] : ref
+[GOL-a72b270f-2caf-4654-bf72-9dfa750f26ea] --> [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [DEC-2c4a32c5-c9a7-4ad7-8740-53288b3ff15b] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [DEC-3cccd4cb-f488-4a6f-8005-f38d2b5e92ef] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [DEC-4a3b078a-852c-4a4e-87b5-816e17dd0a44] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [DEC-a6235507-22fa-4aed-a45e-d9707c0f13bd] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [GOL-0503a9d2-0a80-4369-a295-ed978e3e4bef] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [GOL-1585066f-9fc7-44bb-a3be-3c5e6cf91cde] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [GOL-86b457d9-58b0-4c9c-8c53-cf7849a72e75] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [GOL-a72b270f-2caf-4654-bf72-9dfa750f26ea] : ref
+[QA-797b22c3-dd5d-4a66-ac74-64a1f1ce36ee] --> [PRB-e1dd6083-cbd6-42da-a285-bf9e80c21d5a] : ref
+@enduml

@@ -1,0 +1,42 @@
+@startuml Edit Graph Data Outside the API
+
+actor "Developer, with a text editor and git, outside the API." as p1
+actor Filesystem
+actor git
+participant "GraphMgr's change-detection path: the in-memory filesystem manifest, the shard-level OS watches, the periodic poll, per-file validation, and the index upserts." as p4
+
+note left of p1
+  The API process is running with its watchdog and poll active.
+  The edited content targets the convention-named index files (for nodes, the attachments are opaque and not indexed).
+end note
+
+p1 -> p4: A tracked file is created, modified, or deleted on disk, staged or not.
+p1 -> p4: The developer modifies, creates, or deletes entity files directly (no git add, no git commit).
+Filesystem -> p4: The shard-level watchdog fires (debounced) and/or the periodic poll sweeps the tree.
+p4 -> p4: GraphMgr runs the stat prefilter, then a content hash, against the manifest for each touched path.
+alt A file is only half-written when the event fires
+p4 -> p4: The debounce window re-checks the stat; if the file is still changing, the check is deferred to the end of the window.
+p4 -> p4: If the content still fails to parse or validate, the entity is marked invalid per-file and everything else syncs normally.
+p4 -> p4: The file is retried on its next detected change.
+end
+p4 -> p4: For each confirmed change, GraphMgr reparses and schema-validates the file and upserts, updates, or removes the corresponding index rows and embeddings.
+alt A git pull or merge brings many files in at once
+p4 -> p4: The bulk event burst is absorbed by the debounce window.
+p4 -> p4: The poll confirms the final state of every touched path; the index converges to the merged tree.
+note right
+  Return to step 5.
+end note
+end
+p4 -> p1: API queries reflect the change.
+alt The developer deletes a node that still has edges
+p4 -> p4: The node is removed from the index.
+p4 -> p4: The edges whose src or dst no longer resolves are handled per the dangling-edge policy (open issue).
+end
+
+note left of p1
+  The change (create, modify, or delete) is reflected in the derived indexes and in API query results, without a process restart.
+end note
+note left of p1
+  An invalid or mid-write file is marked as an isolated per-file condition: it does not block synchronization of any other entity, and the system stays up.
+end note
+@enduml

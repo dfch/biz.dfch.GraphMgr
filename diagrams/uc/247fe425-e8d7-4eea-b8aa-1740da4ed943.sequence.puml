@@ -1,0 +1,39 @@
+@startuml Manage the GraphMgr Graph
+
+actor "User or developer, through the ABI, REST API, MCP server, a text editor, or git." as p1
+actor "Local embedding model" as p2
+actor "sqlite-vec and the derived SQLite relational index" as p3
+actor git
+actor "Filesystem watcher and periodic poll" as p5
+participant "GraphMgr as a whole: the API write path, the out-of-band filesystem change-detection path, and the derived SQLite relational index and sqlite-vec similarity layers." as p6
+
+note left of p1
+  GraphMgr is running with its API, change-detection watcher, and derived indexes initialized.
+  JSON Schemas for the node and edge types in use already exist under the schemas directory.
+end note
+
+p1 -> p6: A user or developer wants to add to, change, or ask a question of the graph, through any of the supported access paths.
+p1 -> p6: The user or developer creates a node and wires up its edges through the API (UC 98135519-b97e-4df0-8386-45ee5a2fb66d).
+alt The write is rejected
+p6 -> p1: GraphMgr returns a structured rejection (schema-validation failure, dangling edge endpoint, or per-file validation failure) without a partial write or commit.
+p1 -> p6: The user or developer corrects the input and retries the applicable subordinate use case.
+end
+p1 -> git: The developer may instead, or additionally, edit graph data directly on disk or through git, outside the API (UC 0b1ae5ce-bc8e-4e11-beb8-3b75455dfec8).
+p6 -> p6: GraphMgr's change-detection pipeline reconciles any out-of-band edits with the derived indexes, so both write paths converge to the same consistent state.
+p1 -> p6: The user queries the graph with a multi-hop traversal to answer reachability and dependency-closure questions (UC 7f0637c2-9989-4d06-b1de-7c8a402aa17b).
+alt The index or embeddings are not yet available
+p6 -> p1: GraphMgr reports the system as not ready, instead of returning an empty, partial, or stale result.
+p1 -> p6: The user retries once the startup rebuild or pending synchronization completes.
+end
+p1 -> p6: The user finds nodes or edges similar to a query by name and description, when exact identifiers are not known (UC 044b6e3d-fed2-4eaf-98c2-949ba2e6a0f7).
+p1 -> p6: The user repeats any of steps 1, 2, 4, or 5 as the graph and its usage evolve.
+
+note left of p1
+  The graph's nodes and edges exist as git-committed files and are reflected in the derived indexes.
+  The graph can be queried by multi-hop traversal and by name/description similarity, and returns current, consistent results.
+end note
+note left of p1
+  A write is rejected (schema-validation failure, dangling edge, or invalid out-of-band file) without corrupting the rest of the graph or leaving a partial commit.
+  A query reports the system as not ready, rather than returning stale or partial results silently, while the index is rebuilding.
+end note
+@enduml

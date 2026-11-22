@@ -1,0 +1,10 @@
+@startuml Query the Graph with a Multi-Hop Traversal
+
+actor "User or downstream system, through the ABI, REST API, or MCP server." as actor1
+actor "SQLite relational index" as actor2
+usecase "Query the Graph with a Multi-Hop Traversal" as uc <<user goal>>
+
+actor1 --> uc
+actor2 --> uc
+
+@enduml

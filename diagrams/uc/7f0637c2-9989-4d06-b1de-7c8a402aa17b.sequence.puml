@@ -1,0 +1,31 @@
+@startuml Query the Graph with a Multi-Hop Traversal
+
+actor "User or downstream system, through the ABI, REST API, or MCP server." as p1
+actor "SQLite relational index" as p2
+participant "GraphMgr's query path: the derived SQLite relational index" as p3
+
+note left of p1
+  The process has completed its startup rebuild and the index reflects the current tree (or is within one detection cycle of it).
+end note
+
+p1 -> p3: The user submits a traversal query with a start node, a maximum hop count, and optional type filters.
+p1 -> p3: The user submits a multi-hop traversal query (start node, max hops, optional type filters).
+p3 -> p2: GraphMgr executes the traversal against the SQLite links table using recursive CTEs.
+alt An out-of-band change is mid-sync when the query arrives
+p3 -> p3: GraphMgr serves the query from the last consistent index state and lets the detection pipeline continue in the background.
+p3 -> p3: A subsequent query reflects the change once synchronization has caught up.
+end
+p3 -> p1: GraphMgr returns the reachable nodes with hop counts and the traversed paths.
+p1 -> p3: The user uses the result set, optionally joined with type-specific attribute filters.
+alt The result set is needed for a harder graph algorithm
+p3 -> p3: GraphMgr materializes the relevant subgraph via SQL for an algorithm layer (for example networkx) instead of forcing the algorithm into recursive CTEs.
+p3 -> p1: Return the algorithm result to the user.
+end
+
+note left of p1
+  The query returns the correct reachable set with hop counts and paths, computed from the SQLite index.
+end note
+note left of p1
+  If the index is unavailable (for example, still rebuilding at startup), the query surface reports the system as not ready rather than returning stale or partial results silently.
+end note
+@enduml

@@ -1,0 +1,12 @@
+@startuml Edit Graph Data Outside the API
+
+actor "Developer, with a text editor and git, outside the API." as actor1
+actor Filesystem
+actor git
+usecase "Edit Graph Data Outside the API" as uc <<user goal>>
+
+actor1 --> uc
+Filesystem --> uc
+git --> uc
+
+@enduml

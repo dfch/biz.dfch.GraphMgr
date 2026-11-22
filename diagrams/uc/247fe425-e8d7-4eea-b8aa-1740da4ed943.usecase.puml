@@ -1,0 +1,16 @@
+@startuml Manage the GraphMgr Graph
+
+actor "User or developer, through the ABI, REST API, MCP server, a text editor, or git." as actor1
+actor "Local embedding model" as actor2
+actor "sqlite-vec and the derived SQLite relational index" as actor3
+actor git
+actor "Filesystem watcher and periodic poll" as actor5
+usecase "Manage the GraphMgr Graph" as uc <<summary>>
+
+actor1 --> uc
+actor2 --> uc
+actor3 --> uc
+git --> uc
+actor5 --> uc
+
+@enduml
